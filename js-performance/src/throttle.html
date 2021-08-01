@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>节流</title>
+    <style>
+      body {
+        height: 5000px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      function myThrottle(handle, wait) {
+        if (typeof handle !== "function")
+          throw new Error("handle must be an function");
+        if (typeof wait === "undefined") wait = 400;
+
+        let previous = 0;
+        let timer = null;
+        return function proxy(...args) {
+          let now = new Date();
+          let self = this;
+          let interval = wait - (now - previous);
+          if (interval <= 0) {
+            clearTimeout(timer); // 此行和下一行，是为了处理当interval <= 0与!timer同时满足时的特殊情况
+            timer = null;
+            handle.call(self, ...args);
+            previous = new Date();
+          } else if (!timer) {
+            timer = setTimeout(() => {
+              clearTimeout(timer);
+              timer = null; //  clearTimeout(timer); 操作只是将系统中的定时器清除了，但是timer中的值还在
+              handle.call(self, ...args);
+              previous = new Date();
+            }, interval);
+          }
+        };
+      }
+
+      function scrollFn() {
+        console.log("滚动了");
+      }
+      window.onscroll = myThrottle(scrollFn, 600);
+    </script>
+  </body>
+</html>

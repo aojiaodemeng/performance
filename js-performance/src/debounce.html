@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>防抖</title>
+  </head>
+  <body>
+    <button id="btn">点击</button>
+    <script>
+      var oBtn = document.getElementById("btn");
+      // handle-最终需要执行的事件监听，wait-事件触发之后多久开始执行，immediate-控制执行第一次还是最后一次
+      function myDebounce(handle, wait, immediate) {
+        if (typeof handle !== "function")
+          throw new Error("handle must be an function");
+        if (typeof wait === "undefined") wait = 300;
+        if (typeof wait === "boolean") {
+          immediate = wait;
+          wait = 300;
+        }
+        if (typeof immediate !== "boolean") immediate = false;
+
+        // 所谓的防抖效果我们想要实现的就是有一个“人”可以管理handle的执行次数
+        // 如果我们想要执行最后一次，那就意味着无论我们当前点击了多少次，前面的N-1次都无用
+        let timer = null;
+        return function proxy(...args) {
+          let self = this;
+          init = immediate && !timer;
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = null;
+            !immediate ? handle.call(self, ...args) : null;
+          }, wait);
+
+          // 如果当前传进来的immediate为true，就表示我们需要立即执行
+          // 如果想要实现只在第一次执行，那么可以添加上timer为null作为判断，因为timer=null就意味着没有第二三..次点击
+          init ? handle.call(self, ...args) : null;
+        };
+      }
+      function btnClick() {
+        console.log("别点击了");
+      }
+      // 当我们执行了按钮点击之后就会执行防抖函数返回的proxy
+      oBtn.onclick = myDebounce(btnClick, 200, false);
+    </script>
+  </body>
+</html>
