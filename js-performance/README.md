@@ -6,6 +6,7 @@
 - 垃圾回收与常见 GC 算法
 - V8 引擎的垃圾回收
 - Performance 工具
+- JSBench 使用
 
 # Javascript 内存管理
 
@@ -357,3 +358,12 @@ document.getElementById("btn").addEventListener("click", fn);
 
 - Timeline 中频繁的上升下降
 - 任务管理器中数据频繁的增加减小
+
+# JSBench 使用
+
+[JSBench 网站](https://jsbench.me/) 一个可以在线测试 js 代码效率的网站，
+使用注意：
+
+- 浏览器是多线程的，尽量只开一个标签页，以免被抢占资源
+- run 测试时不要关掉当前线程（比如缩小当前界面），避免被挂起
+- 一次测试结果不一定准确，多测试几次
